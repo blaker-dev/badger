@@ -6,17 +6,18 @@ const app = express();
 app.use(cors()); 
 app.use(express.json());
 
-// Connect to the SQLite file (it creates it if it doesn't exist!)
 const db = new sqlite3.Database('./badger.db');
 
-// Create your table
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS badges (
     id INTEGER PRIMARY KEY,
     title TEXT,
     text TEXT,
     isBadge BOOLEAN,
-    isCompleted BOOLEAN
+    isCompleted BOOLEAN,
+    x REAL,
+    y REAL,
+    zIndex INTEGER
   )`);
 });
 
@@ -25,6 +26,19 @@ app.get('/api/badges', (req, res) => {
   db.all("SELECT * FROM badges", [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
+  });
+});
+
+// Add a new badge to the database
+app.post('/api/badges', (req, res) => {
+  const { title, text, isBadge, isCompleted, x, y, zIndex } = req.body;
+  
+  const query = `INSERT INTO badges (title, text, isBadge, isCompleted, x, y, zIndex) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  
+  db.run(query, [title, text, isBadge, isCompleted, x, y, zIndex], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    
+    res.json({ id: this.lastID, title, text, isBadge, isCompleted, x, y, zIndex });
   });
 });
 

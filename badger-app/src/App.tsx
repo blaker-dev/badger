@@ -9,8 +9,6 @@ export const App: React.FC = () => {
       <CorkNoise/>
 
       <PaperManager/>
-
-      <Navbar/>
     </div>
   );
 };

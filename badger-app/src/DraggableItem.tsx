@@ -10,7 +10,7 @@ interface DraggableItemProps {
 }
 
 export const DraggableItem = ({ id, x, y, zIndex, children }: DraggableItemProps) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id });
 
   const currentX = x + (transform?.x ?? 0);
   const currentY = y + (transform?.y ?? 0);
@@ -21,11 +21,20 @@ export const DraggableItem = ({ id, x, y, zIndex, children }: DraggableItemProps
     top: `${currentY}px`,
     zIndex: transform ? 999 : zIndex, 
     cursor: transform ? 'grabbing' : 'grab',
+    
+    // IMPORTANT: since underlaying cork is styled with SVG this renders seperately
+    //            greatly reducing lag while movig
+    willChange: isDragging ? 'transform, opacity' : 'auto',
+    
+    opacity: isDragging ? 0.9 : 1,
+    transform: isDragging ? 'scale(1.02)' : 'scale(1)', 
   };
 
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {children}
+      <div style={{ pointerEvents: isDragging ? 'none' : 'auto' }}>
+        {children}
+      </div>
     </div>
   );
 };

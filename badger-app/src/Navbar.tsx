@@ -2,7 +2,11 @@
 import React, { useState } from 'react';
 import './stylesheets/navbar.css';
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  onAddClick: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onAddClick }) => {
   const [activeTab, setActiveTab] = useState<string>('Home');
 
   return (
@@ -16,17 +20,21 @@ export const Navbar: React.FC = () => {
       
       <button 
         className={`nav-item ${activeTab === 'Add Badge' ? 'active' : ''}`}
-        onClick={() => setActiveTab('Add Badge')}
+        onClick={() => {
+          setActiveTab('Add Badge');
+          onAddClick(); 
+        }}
       >
         Add Badge
       </button>
-      
+
       <button 
         className={`nav-item ${activeTab === 'Profile' ? 'active' : ''}`}
         onClick={() => setActiveTab('Profile')}
       >
         Profile
       </button>
+      
     </nav>
   );
 };
