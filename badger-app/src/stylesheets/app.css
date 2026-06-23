@@ -5,3 +5,21 @@
   padding: 50px;
   justify-content: center;
 }
+
+.canvas {
+  background-color: #C09870; 
+
+
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  position: relative;
+}
