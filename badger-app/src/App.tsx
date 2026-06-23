@@ -1,23 +1,16 @@
 import React from 'react';
-import { FabricNoise } from './FabricNoise';
+import { CorkNoise } from './CorkNoise';
 import { PaperManager } from './PaperManager';
+import { Navbar } from './Navbar';
 
 export const App: React.FC = () => {
   return (
-    <div style={{ 
-      backgroundColor: '#FDF4DC', 
-      minHeight: '100vh', 
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'sans-serif',
-      position: 'relative' 
-    }}>
-      
-      <FabricNoise/>
+    <div className="canvas">
+      <CorkNoise/>
 
       <PaperManager/>
+
+      <Navbar/>
     </div>
   );
 };
