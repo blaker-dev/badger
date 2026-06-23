@@ -25,34 +25,46 @@ export const PaperManager: React.FC = () => {
 
     const handleSaveNewBadge = async (newBadgeData: { title: string; text: string; isBadge: boolean }) => {
         try {
-        const completeBadge = {
-            ...newBadgeData,
-            isCompleted: false,
-            x: window.innerWidth / 2 - 100, // Center X
-            y: window.innerHeight / 2 - 100, // Center Y
-            zIndex: maxZIndex + 1
-        };
+            const completeBadge = {
+                ...newBadgeData,
+                isCompleted: false,
+                x: window.innerWidth / 2 - 100, // Center X
+                y: window.innerHeight / 2 - 100, // Center Y
+                zIndex: maxZIndex + 1
+            };
 
-        const response = await fetch('http://localhost:3001/api/badges', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(completeBadge)
-        });
+            const response = await fetch('http://localhost:3001/api/badges', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(completeBadge)
+            });
 
-        // If the server connects but returns a bad status (like 500), throw an error
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+            // If the server connects but returns a bad status (like 500), throw an error
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const savedBadge = await response.json();
+
+            setBadges([...badges, savedBadge]);
+            setMaxZIndex(savedBadge.zIndex);
+            setIsModalOpen(false); // Closes the modal on success!
+        } catch (error) {
+            console.error("Failed to save badge:", error);
+            alert("Could not connect to the database. Is your backend server running?");
         }
+    };  
 
-        const savedBadge = await response.json();
-
-        setBadges([...badges, savedBadge]);
-        setMaxZIndex(savedBadge.zIndex);
-        setIsModalOpen(false); // Closes the modal on success!
-    } catch (error) {
-        console.error("Failed to save badge:", error);
-        alert("Could not connect to the database. Is your backend server running?");
-    }
+    const updateBadgePositionInDB = async (id: number, x: number, y: number, zIndex: number) => {
+        try {
+            await fetch(`http://localhost:3001/api/badges/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ x, y, zIndex })
+            });
+        } catch (error) {
+            console.error("Failed to save position to database:", error);
+        }
     };  
 
     useEffect(() => {
@@ -93,23 +105,32 @@ export const PaperManager: React.FC = () => {
         setBadges((items) => items.map(item => 
             item.id === event.active.id ? { ...item, zIndex: newZIndex } : item
         ));
+
+        const activeItem = badges.find(b => b.id === event.active.id);
+        if (activeItem) {
+            updateBadgePositionInDB(activeItem.id, activeItem.x, activeItem.y, newZIndex);
+        }
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, delta } = event;
 
+        const activeItem = badges.find(b => b.id === active.id);
+        if (!activeItem) return;
+
+        const newX = activeItem.x + delta.x;
+        const newY = activeItem.y + delta.y;
+
         setBadges((items) => 
             items.map((item) => {
                 if (item.id === active.id) {
-                    return {
-                        ...item,
-                        x: item.x + delta.x,
-                        y: item.y + delta.y,
-                    };
+                    return { ...item, x: newX, y: newY };
                 }
                 return item;
             })
         );
+
+        updateBadgePositionInDB(activeItem.id, newX, newY, activeItem.zIndex);
     };
 
     return (

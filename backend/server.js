@@ -42,6 +42,19 @@ app.post('/api/badges', (req, res) => {
   });
 });
 
+// Update a badge's position
+app.put('/api/badges/:id', (req, res) => {
+  const { id } = req.params;
+  const { x, y, zIndex } = req.body;
+  
+  const query = `UPDATE badges SET x = ?, y = ?, zIndex = ? WHERE id = ?`;
+  
+  db.run(query, [x, y, zIndex, id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "Position saved successfully", changes: this.changes });
+  });
+});
+
 app.listen(3001, () => {
   console.log('Server running on http://localhost:3001');
 });
