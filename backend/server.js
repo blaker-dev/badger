@@ -55,6 +55,19 @@ app.put('/api/badges/:id', (req, res) => {
   });
 });
 
+// DELETE Route: Remove a badge
+app.delete('/api/badges/:id', (req, res) => {
+    const { id } = req.params;
+    
+    db.run('DELETE FROM badges WHERE id = ?', [id], function(err) {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).json({ error: 'Failed to delete badge' });
+        }
+        res.json({ message: 'Badge deleted successfully' });
+    });
+});
+
 app.listen(3001, () => {
   console.log('Server running on http://localhost:3001');
 });

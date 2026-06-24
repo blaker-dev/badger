@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { DndContext, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core';
+import { 
+    DndContext, 
+    PointerSensor, 
+    useSensor, 
+    useSensors, 
+    type DragEndEvent, 
+    type DragStartEvent 
+} from '@dnd-kit/core';
 import { PaperNode } from './PaperNode';
 import { BadgeNode } from './BadgeNode';
 import { DraggableItem } from './DraggableItem';
@@ -22,14 +29,23 @@ export const PaperManager: React.FC = () => {
     const [maxZIndex, setMaxZIndex] = useState(1);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedBadgeId, setSelectedBadgeId] = useState<number | null>(null);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 5, 
+            },
+        })
+    );
 
     const handleSaveNewBadge = async (newBadgeData: { title: string; text: string; isBadge: boolean }) => {
         try {
             const completeBadge = {
                 ...newBadgeData,
                 isCompleted: false,
-                x: window.innerWidth / 2 - 100, // Center X
-                y: window.innerHeight / 2 - 100, // Center Y
+                x: window.innerWidth / 2 - 100,
+                y: window.innerHeight / 2 - 100,
                 zIndex: maxZIndex + 1
             };
 
@@ -39,7 +55,6 @@ export const PaperManager: React.FC = () => {
                 body: JSON.stringify(completeBadge)
             });
 
-            // If the server connects but returns a bad status (like 500), throw an error
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -55,6 +70,20 @@ export const PaperManager: React.FC = () => {
         }
     };  
 
+    const handleDeleteBadge = async (id: number) => {
+        try {
+            await fetch(`http://localhost:3001/api/badges/${id}`, {
+                method: 'DELETE',
+            });
+            
+            setBadges((prevBadges) => prevBadges.filter((badge) => badge.id !== id));
+            
+            setSelectedBadgeId(null);
+        } catch (error) {
+            alert('Failed to delete badge. Is the backend running?');
+        }
+    };
+    
     const updateBadgePositionInDB = async (id: number, x: number, y: number, zIndex: number) => {
         try {
             await fetch(`http://localhost:3001/api/badges/${id}`, {
@@ -135,23 +164,68 @@ export const PaperManager: React.FC = () => {
 
     return (
         <>
-            <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                <div className="gallery-container" style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+            <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                <div className="gallery-container" onClick={() => setSelectedBadgeId(null)} style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
                     {badges.map((item) => (
-                        <DraggableItem 
-                            key={item.id} 
-                            id={item.id}
-                            x={item.x}
-                            y={item.y}
-                            zIndex={item.zIndex}
-                        >
-                            {item.isBadge ? (
-                                <BadgeNode title={item.title} url={item.text} isCompleted={item.isCompleted} />
-                            ) : (
-                                <PaperNode title={item.title} text={item.text} />
-                            )}
-                        </DraggableItem>
-                    ))}
+    <DraggableItem 
+        key={item.id} 
+        id={item.id} 
+        x={item.x} 
+        y={item.y} 
+        zIndex={item.zIndex}
+    >
+        <div 
+            onClick={(e) => {
+            e.stopPropagation(); // Stops the click from hitting the background
+            setSelectedBadgeId(item.id);
+        }} 
+        style={{ position: 'relative' }}
+        >
+            {item.isBadge ? (
+                <BadgeNode 
+                    key={item.id} 
+                    title={item.title} 
+                    url={item.text} 
+                    isCompleted={item.isCompleted} 
+                />
+            ) : (
+                <PaperNode 
+                    key={item.id} 
+                    title={item.title} 
+                    text={item.text} 
+                />
+            )}
+
+            {selectedBadgeId === item.id && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteBadge(item.id);
+                    }}
+                    style={{
+                        position: 'absolute',
+                        right: '-50px',
+                        top: '10px',
+                        background: '#ff4d4d',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '35px',
+                        height: '35px',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        fontSize: '18px'
+                    }}
+                >
+                    🗑️
+                </button>
+            )}
+        </div>
+    </DraggableItem>
+))}
                 </div>
             </DndContext>
 
