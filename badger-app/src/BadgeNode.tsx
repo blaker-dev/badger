@@ -1,17 +1,25 @@
 import React from 'react';
 import './stylesheets/paper.css';
+import { type Point, getSvgPathFromStroke } from './libs/drawingUtils';
 
 interface BadgeNodeProps {
-    key: number; // Note: 'key' is a reserved React prop, you generally don't type it in the interface!
     title: string;
-    url: string;
-    isCompleted: boolean;
+    drawing: string; // json string drawing
+   isCompleted: boolean;
     shape: string; 
     rotation: string; 
 }
 
-export const BadgeNode: React.FC<BadgeNodeProps> = ({ title, url, isCompleted, shape, rotation }) => {
-    
+export const BadgeNode: React.FC<BadgeNodeProps> = ({ drawing, isCompleted, shape, rotation }) => { 
+    let lines: Point[][] = [];
+    try {
+        if (drawing) {
+            lines = JSON.parse(drawing);
+        }
+    } catch (error) {
+        console.error("Failed to parse drawing data", error);
+    }
+
     return (
         <div 
             className="badge-wrapper" 
@@ -21,7 +29,21 @@ export const BadgeNode: React.FC<BadgeNodeProps> = ({ title, url, isCompleted, s
                 className={`badge-inner ${isCompleted ? 'badge-completed' : 'badge-incomplete'}`}
                 style={{ clipPath: shape }} 
             >
-                <span className="badge-text">
+                <span className="badge-image">
+                    {/** Use SVG drawing to render image according to json instructions */} 
+                    <svg>
+                        {lines.map((line, index) => (
+                            <path
+                                key={index}
+                                d={getSvgPathFromStroke(line)}
+                                stroke="#333"
+                                strokeWidth={3}
+                                fill="none"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                        ))}
+                    </svg> 
                 </span>
             </div>
         </div>

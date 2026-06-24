@@ -17,6 +17,7 @@ interface BadgeData {
     id: number;
     title: string;
     text: string;       
+    drawing: string;
     isBadge: boolean;
     isCompleted: boolean;
     x: number;  
@@ -55,7 +56,7 @@ export const PaperManager: React.FC = () => {
         return `polygon(${points.join(', ')})`;
     };
 
-    const handleSaveNewBadge = async (newBadgeData: { title: string; text: string; isBadge: boolean }) => {
+    const handleSaveNewBadge = async (newBadgeData: { title: string; text: string; drawing: string, isBadge: boolean }) => {
         try {
             const completeBadge = {
                 ...newBadgeData,
@@ -188,7 +189,7 @@ export const PaperManager: React.FC = () => {
     >
         <div 
             onClick={(e) => {
-            e.stopPropagation(); // Stops the click from hitting the background
+            e.stopPropagation();
             setSelectedBadgeId(item.id);
         }} 
         style={{ position: 'relative' }}
@@ -197,7 +198,7 @@ export const PaperManager: React.FC = () => {
                 <BadgeNode 
                     key={item.id} 
                     title={item.title} 
-                    url={item.text} 
+                    drawing={item.drawing}
                     isCompleted={item.isCompleted}
                     shape={item.shape}
                     rotation={item.rotation}

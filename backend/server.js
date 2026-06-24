@@ -19,7 +19,8 @@ db.serialize(() => {
         y REAL,
         zIndex INTEGER,
         shape TEXT,
-        rotation TEXT
+        rotation TEXT,
+        drawing TEXT
     )`);
 });
 
@@ -33,17 +34,17 @@ app.get('/api/badges', (req, res) => {
 
 // Add a new badge to the database
 app.post('/api/badges', (req, res) => {
-    const { title, text, isBadge, isCompleted, x, y, zIndex, shape, rotation } = req.body;
+    const { title, text, isBadge, isCompleted, x, y, zIndex, shape, rotation, drawing } = req.body;
     
     db.run(
-        'INSERT INTO badges (title, text, isBadge, isCompleted, x, y, zIndex, shape, rotation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [title, text, isBadge, isCompleted, x, y, zIndex, shape, rotation],
+        'INSERT INTO badges (title, text, drawing, isBadge, isCompleted, x, y, zIndex, shape, rotation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [title, text, drawing, isBadge, isCompleted, x, y, zIndex, shape, rotation],
         function(err) {
             if (err) {
                 console.error(err.message);
                 return res.status(500).json({ error: 'Failed to add badge' });
             }
-            res.json({ id: this.lastID, title, text, isBadge, isCompleted, x, y, zIndex, shape, rotation });
+            res.json({ id: this.lastID, title, text, drawing, isBadge, isCompleted, x, y, zIndex, shape, rotation });
         }
     );
 });
