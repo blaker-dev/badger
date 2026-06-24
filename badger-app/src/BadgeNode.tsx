@@ -29,9 +29,9 @@ export const BadgeNode: React.FC<BadgeNodeProps> = ({ drawing, isCompleted, shap
                 className={`badge-inner ${isCompleted ? 'badge-completed' : 'badge-incomplete'}`}
                 style={{ clipPath: shape }} 
             >
-                <span className="badge-image">
+                <div className="badge-image">
                     {/** Use SVG drawing to render image according to json instructions */} 
-                    <svg>
+                    <svg viewBox="0 0 200 200" style={{width: '100%', height: '100%'}}>
                         {lines.map((line, index) => (
                             <path
                                 key={index}
@@ -44,7 +44,7 @@ export const BadgeNode: React.FC<BadgeNodeProps> = ({ drawing, isCompleted, shap
                             />
                         ))}
                     </svg> 
-                </span>
+                </div>
             </div>
         </div>
     );
