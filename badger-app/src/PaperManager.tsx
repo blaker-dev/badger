@@ -14,14 +14,16 @@ import { Navbar } from './Navbar';
 import { AddBadgeModal } from './AddBadgeModal';
 
 interface BadgeData {
-  id: number;
-  title: string;
-  text: string;       
-  isBadge: boolean;
-  isCompleted: boolean;
-  x: number;  
-  y: number;      
-  zIndex: number; 
+    id: number;
+    title: string;
+    text: string;       
+    isBadge: boolean;
+    isCompleted: boolean;
+    x: number;  
+    y: number;      
+    zIndex: number; 
+    shape: string;
+    rotation: string;
 }
 
 export const PaperManager: React.FC = () => {
@@ -39,6 +41,20 @@ export const PaperManager: React.FC = () => {
         })
     );
 
+    const generateRippedEdge = () => {
+        const points = [];
+        const numPoints = 35;
+        const variance = 6;
+        for (let i = 0; i < numPoints; i++) {
+            const angle = (i / numPoints) * Math.PI * 2;
+            const r = 50 - (Math.random() * variance);
+            const x = 50 + (r * Math.cos(angle));
+            const y = 50 + (r * Math.sin(angle));
+            points.push(`${x.toFixed(1)}% ${y.toFixed(1)}%`);
+        }
+        return `polygon(${points.join(', ')})`;
+    };
+
     const handleSaveNewBadge = async (newBadgeData: { title: string; text: string; isBadge: boolean }) => {
         try {
             const completeBadge = {
@@ -46,7 +62,9 @@ export const PaperManager: React.FC = () => {
                 isCompleted: false,
                 x: window.innerWidth / 2 - 100,
                 y: window.innerHeight / 2 - 100,
-                zIndex: maxZIndex + 1
+                zIndex: maxZIndex + 1,
+                shape: newBadgeData.isBadge ? generateRippedEdge() : '',
+                rotation: `rotate(${(Math.random() * 8) - 4}deg)`
             };
 
             const response = await fetch('http://localhost:3001/api/badges', {
@@ -115,13 +133,7 @@ export const PaperManager: React.FC = () => {
                 setMaxZIndex(2);
             } catch
             {
-                const mockData: BadgeData[] = [
-                    {id: 1, title: "Japan", text: "N/A", isBadge: true, isCompleted: false, x: 75, y: 25, zIndex: 1},
-                    {id: 2, title: "Japan-Trip", text: "boys trip to japan", isBadge: false, isCompleted: false, x: 120, y: 250, zIndex: 2}
-                ];
-                
-                 setBadges(mockData);
-                setMaxZIndex(2);
+                // do nothing ig??
             }
         };
         fetchBadges();
@@ -186,7 +198,9 @@ export const PaperManager: React.FC = () => {
                     key={item.id} 
                     title={item.title} 
                     url={item.text} 
-                    isCompleted={item.isCompleted} 
+                    isCompleted={item.isCompleted}
+                    shape={item.shape}
+                    rotation={item.rotation}
                 />
             ) : (
                 <PaperNode 

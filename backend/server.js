@@ -9,16 +9,18 @@ app.use(express.json());
 const db = new sqlite3.Database('./badger.db');
 
 db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS badges (
-    id INTEGER PRIMARY KEY,
-    title TEXT,
-    text TEXT,
-    isBadge BOOLEAN,
-    isCompleted BOOLEAN,
-    x REAL,
-    y REAL,
-    zIndex INTEGER
-  )`);
+    db.run(`CREATE TABLE IF NOT EXISTS badges (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        text TEXT,
+        isBadge BOOLEAN,
+        isCompleted BOOLEAN,
+        x REAL,
+        y REAL,
+        zIndex INTEGER,
+        shape TEXT,
+        rotation TEXT
+    )`);
 });
 
 // Create an API route for React to fetch the badges
@@ -31,15 +33,19 @@ app.get('/api/badges', (req, res) => {
 
 // Add a new badge to the database
 app.post('/api/badges', (req, res) => {
-  const { title, text, isBadge, isCompleted, x, y, zIndex } = req.body;
-  
-  const query = `INSERT INTO badges (title, text, isBadge, isCompleted, x, y, zIndex) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-  
-  db.run(query, [title, text, isBadge, isCompleted, x, y, zIndex], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
+    const { title, text, isBadge, isCompleted, x, y, zIndex, shape, rotation } = req.body;
     
-    res.json({ id: this.lastID, title, text, isBadge, isCompleted, x, y, zIndex });
-  });
+    db.run(
+        'INSERT INTO badges (title, text, isBadge, isCompleted, x, y, zIndex, shape, rotation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [title, text, isBadge, isCompleted, x, y, zIndex, shape, rotation],
+        function(err) {
+            if (err) {
+                console.error(err.message);
+                return res.status(500).json({ error: 'Failed to add badge' });
+            }
+            res.json({ id: this.lastID, title, text, isBadge, isCompleted, x, y, zIndex, shape, rotation });
+        }
+    );
 });
 
 // Update a badge's position
