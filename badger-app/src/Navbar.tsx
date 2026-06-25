@@ -7,7 +7,8 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ setScene }) => {
-  const [activeTab, setActiveTab] = useState<string>('Profile');
+  const [activeTab, setActiveTab] = useState<string>('Home');
+  setScene('Home'); // Initialize at Home
 
   const updateScene = (scene: string): void => {
     setScene(scene);
