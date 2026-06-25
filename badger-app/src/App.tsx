@@ -10,15 +10,13 @@ export const App: React.FC = () => {
   return (
     <div className="cork-canvas">
 
-      { (scene == "Home") ?
-        <div className="home">
-          <Home/>
-        </div>
-        :
-        <div> 
-          <BoardManager/>
-        </div>
-      }
+      {(() => {
+        switch (scene) {
+          case 'Home':
+            return <Home setScene={setScene}/>
+          case 'Board':
+            return <BoardManager scene={scene}/>}
+      })()} 
 
       <Navbar setScene={setScene}/>
     </div>

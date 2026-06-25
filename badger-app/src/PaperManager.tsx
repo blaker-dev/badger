@@ -13,6 +13,10 @@ import { DraggableItem } from './DraggableItem';
 import { Toolbar } from './Toolbar';
 import { AddBadgeModal } from './AddBadgeModal';
 
+interface PaperManagerProps {
+    scene: string;
+}
+
 interface BadgeData {
     id: number;
     title: string;
@@ -27,7 +31,7 @@ interface BadgeData {
     rotation: string;
 }
 
-export const PaperManager: React.FC = () => {
+export const PaperManager: React.FC<PaperManagerProps> = ({ scene }) => {
     const [badges, setBadges] = useState<BadgeData[]>([]);
     const [maxZIndex, setMaxZIndex] = useState(1);
 

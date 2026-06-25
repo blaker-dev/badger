@@ -1,10 +1,14 @@
 import './stylesheets/app.css';
 import { PaperManager } from './PaperManager';
 
-export const BoardManager: React.FC = () => {
+interface BoardManagerProps {
+    scene: string;
+}
+
+export const BoardManager: React.FC<BoardManagerProps> = ({ scene }) => {
     return (
-        <div className="">
-            <PaperManager/>
+        <div className="cork-canvas">
+            <PaperManager scene={scene}/>
         </div>
     );
 };

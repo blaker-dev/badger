@@ -1,7 +1,11 @@
 import React from 'react';
 import './stylesheets/home.css';
 
-export const Home: React.FC = () => {
+interface HomeProps {
+    setScene: (value: string) => void;
+}
+
+export const Home: React.FC<HomeProps> = ({ setScene }) => {
     const testBoards = Array.from({ length: 12 }, (_, i) => ({
         id: i + 1,
         title: `Vision Board ${i + 1}`,
@@ -17,7 +21,7 @@ export const Home: React.FC = () => {
             <main className="scrapbook-scroll-area">
                 <div className="polaroid-grid">
                     {testBoards.map((board) => (
-                        <div key={board.id} className="polaroid-card">
+                        <div key={board.id} className="polaroid-card" onClick={() => setScene('Board')}>
                             <div className="polaroid-image-placeholder">
                                 {/* >> thumbnail or smth here << */}
                                 <span>✧.*</span>
