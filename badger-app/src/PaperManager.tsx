@@ -12,6 +12,7 @@ import { BadgeNode } from './BadgeNode';
 import { DraggableItem } from './DraggableItem';
 import { Toolbar } from './Toolbar';
 import { AddBadgeModal } from './AddBadgeModal';
+import './stylesheets/app.css';
 
 interface PaperManagerProps {
     scene: string;
@@ -180,72 +181,71 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ scene }) => {
     };
 
     return (
-        <>
+        <div className="cork-canvas">
             <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                 <div className="gallery-container" onClick={() => setSelectedBadgeId(null)} style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
                     {badges.map((item) => (
-    <DraggableItem 
-        key={item.id} 
-        id={item.id} 
-        x={item.x} 
-        y={item.y} 
-        zIndex={item.zIndex}
-    >
-        <div 
-            onClick={(e) => {
-            e.stopPropagation();
-            setSelectedBadgeId(item.id);
-        }} 
-        style={{ position: 'relative' }}
-        >
-            {item.isBadge ? (
-                <BadgeNode 
-                    key={item.id} 
-                    title={item.title} 
-                    drawing={item.drawing}
-                    isCompleted={item.isCompleted}
-                    shape={item.shape}
-                    rotation={item.rotation}
-                />
-            ) : (
-                <PaperNode 
-                    key={item.id} 
-                    title={item.title} 
-                    text={item.text} 
-                />
-            )}
-
-            {selectedBadgeId === item.id && (
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteBadge(item.id);
-                    }}
-                    style={{
-                        position: 'absolute',
-                        right: '-50px',
-                        top: '10px',
-                        background: '#ff4d4d',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '50%',
-                        width: '35px',
-                        height: '35px',
-                        cursor: 'pointer',
-                        boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        fontSize: '18px',
-                    }}
-                >
-                    X
-                </button>
-            )}
-        </div>
-    </DraggableItem>
-))}
-        </div>
+                        <DraggableItem 
+                            key={item.id} 
+                            id={item.id} 
+                            x={item.x} 
+                            y={item.y} 
+                            zIndex={item.zIndex}
+                        >
+                            <div 
+                                onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedBadgeId(item.id);
+                            }} 
+                            style={{ position: 'relative' }}
+                            >
+                                {item.isBadge ? (
+                                    <BadgeNode 
+                                        key={item.id} 
+                                        title={item.title} 
+                                        drawing={item.drawing}
+                                        isCompleted={item.isCompleted}
+                                        shape={item.shape}
+                                        rotation={item.rotation}
+                                    />
+                                ) : (
+                                <PaperNode 
+                                    key={item.id} 
+                                    title={item.title} 
+                                    text={item.text} 
+                                />
+                            )}
+                            {selectedBadgeId === item.id && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteBadge(item.id);
+                                    }}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '-50px',
+                                        top: '10px',
+                                        background: '#ff4d4d',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '50%',
+                                        width: '35px',
+                                        height: '35px',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        fontSize: '18px',
+                                    }}
+                                >
+                                    X
+                                </button>
+                            )}
+                            </div>
+                        </DraggableItem>
+                    ))}
+                </div>
             </DndContext>
 
             {isModalOpen && (
@@ -254,8 +254,8 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ scene }) => {
                     onSave={handleSaveNewBadge} 
                 />
             )}
-
+            
             <Toolbar onAddClick={() => setIsModalOpen(true)}/>
-        </>
+        </div>
     );
 };

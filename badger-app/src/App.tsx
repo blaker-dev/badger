@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { BoardManager } from './BoardManager.tsx';
+import { PaperManager } from './PaperManager.tsx';
 import { Navbar } from './Navbar.tsx';
 import { Home } from './Home.tsx'
 
@@ -15,7 +15,7 @@ export const App: React.FC = () => {
           case 'Home':
             return <Home setScene={setScene}/>
           case 'Board':
-            return <BoardManager scene={scene}/>}
+            return <PaperManager scene={scene}/>}
       })()} 
 
       <Navbar setScene={setScene}/>
