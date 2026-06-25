@@ -6,6 +6,10 @@ import { Home } from './Home.tsx'
 
 export const App: React.FC = () => {
   const [scene, setScene] = useState('Home');
+  const [boardID, setBoardID] = useState(0);
+  // IMPORTANT: have to get the board id on click here
+  //            then pass that to the PaperManager
+  
 
   return (
     <div className="cork-canvas">
@@ -13,9 +17,9 @@ export const App: React.FC = () => {
       {(() => {
         switch (scene) {
           case 'Home':
-            return <Home setScene={setScene}/>
+            return <Home setScene={setScene} setBoardID={setBoardID}/>
           case 'Board':
-            return <PaperManager scene={scene}/>}
+            return <PaperManager boardID={boardID}/>}
       })()} 
 
       <Navbar setScene={setScene}/>

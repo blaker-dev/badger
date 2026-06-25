@@ -6,11 +6,14 @@ const app = express();
 app.use(cors()); 
 app.use(express.json({ limit: '10mb' }));
 
-const db = new sqlite3.Database('./badger.db');
+const db = new sqlite3.Database('./badger.db', (err) => {
+    db.run("PRAGMA foreign_keys = ON");
+});
 
 db.serialize(() => {
-    db.run(`CREATE TABLE IF NOT EXISTS badges (
+    db.run(`CREATE TABLE IF NOT EXISTS Badges (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        boardID INTEGER,
         title TEXT,
         text TEXT,
         isBadge BOOLEAN,
@@ -21,24 +24,35 @@ db.serialize(() => {
         shape TEXT,
         rotation TEXT,
         drawing TEXT
+        -- FOREIGN KEY (boardID) REFERENCES Boards(id)
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS Boards (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        desc TEXT,
+        image TEXT
     )`);
 });
 
 // Create an API route for React to fetch the badges
-app.get('/api/badges', (req, res) => {
-  db.all("SELECT * FROM badges", [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+// fetch badges from a specific board
+app.get('/api/badges/:boardID', (req, res) => {
+    const inputBoardID = req.params.boardID;
+    db.all("SELECT * FROM Badges WHERE boardID = ?", [inputBoardID], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
 });
 
 // Add a new badge to the database
-app.post('/api/badges', (req, res) => {
+app.post('/api/badges/:boardID', (req, res) => {
+    const inputBoardID = req.params.boardID;
     const { title, text, isBadge, isCompleted, x, y, zIndex, shape, rotation, drawing } = req.body;
     
     db.run(
-        'INSERT INTO badges (title, text, drawing, isBadge, isCompleted, x, y, zIndex, shape, rotation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [title, text, drawing, isBadge, isCompleted, x, y, zIndex, shape, rotation],
+        'INSERT INTO badges (title, boardID, text, drawing, isBadge, isCompleted, x, y, zIndex, shape, rotation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [title, inputBoardID, text, drawing, isBadge, isCompleted, x, y, zIndex, shape, rotation],
         function(err) {
             if (err) {
                 console.error(err.message);

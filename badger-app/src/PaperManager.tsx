@@ -11,15 +11,16 @@ import { PaperNode } from './PaperNode';
 import { BadgeNode } from './BadgeNode';
 import { DraggableItem } from './DraggableItem';
 import { Toolbar } from './Toolbar';
-import { AddBadgeModal } from './AddBadgeModal';
+import { AddBadgeModal } from './AddBadgeModal'
 import './stylesheets/app.css';
 
 interface PaperManagerProps {
-    scene: string;
+    boardID: number;
 }
 
 interface BadgeData {
     id: number;
+    boardID: number;
     title: string;
     text: string;       
     drawing: string;
@@ -32,7 +33,7 @@ interface BadgeData {
     rotation: string;
 }
 
-export const PaperManager: React.FC<PaperManagerProps> = ({ scene }) => {
+export const PaperManager: React.FC<PaperManagerProps> = ({ boardID }) => {
     const [badges, setBadges] = useState<BadgeData[]>([]);
     const [maxZIndex, setMaxZIndex] = useState(1);
 
@@ -73,7 +74,7 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ scene }) => {
                 rotation: `rotate(${(Math.random() * 8) - 4}deg)`
             };
 
-            const response = await fetch('http://localhost:3001/api/badges', {
+            const response = await fetch(`http://localhost:3001/api/badges/${boardID}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(completeBadge)
@@ -125,7 +126,7 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ scene }) => {
 
         const fetchBadges = async () => {
             try {
-                const data = await fetch('http://localhost:3001/api/badges', {
+                const data = await fetch(`http://localhost:3001/api/badges/${boardID}`, {
                     signal: abortController.signal
                 });
 
@@ -137,13 +138,14 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ scene }) => {
 
                 setBadges(result);
                 setMaxZIndex(2);
-            } catch
-            {
-                // do nothing ig??
+            } catch (error: any) {
+                if (error.name !== 'AbortError') {
+                    console.error("Failed to fetch badges on load:", error);
+                }
             }
         };
         fetchBadges();
-    }, []);
+    }, [boardID]);
 
     const handleDragStart = (event: DragStartEvent) => {
         const newZIndex = maxZIndex + 1;
@@ -254,7 +256,7 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ scene }) => {
                     onSave={handleSaveNewBadge} 
                 />
             )}
-            
+
             <Toolbar onAddClick={() => setIsModalOpen(true)}/>
         </div>
     );
