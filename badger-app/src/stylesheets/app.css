@@ -6,9 +6,8 @@
   justify-content: center;
 }
 
-.canvas {
+.cork-canvas {
   background-color: #C09870; 
-
 
   width: 100vw;
   height: 100vh;

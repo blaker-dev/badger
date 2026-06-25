@@ -3,29 +3,24 @@ import React, { useState } from 'react';
 import './stylesheets/navbar.css';
 
 interface NavbarProps {
-  onAddClick: () => void;
+  setScene: (value: string) => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onAddClick }) => {
-  const [activeTab, setActiveTab] = useState<string>('Home');
+export const Navbar: React.FC<NavbarProps> = ({ setScene }) => {
+  const [activeTab, setActiveTab] = useState<string>('Profile');
+
+  const updateScene = (scene: string): void => {
+    setScene(scene);
+    setActiveTab(scene);
+  }
 
   return (
     <nav className="bottom-nav">
       <button 
         className={`nav-item ${activeTab === 'Home' ? 'active' : ''}`}
-        onClick={() => setActiveTab('Home')}
+        onClick={() => updateScene('Home')}
       >
         Home
-      </button>
-      
-      <button 
-        className={`nav-item ${activeTab === 'Add Badge' ? 'active' : ''}`}
-        onClick={() => {
-          setActiveTab('Add Badge');
-          onAddClick(); 
-        }}
-      >
-        Add Badge
       </button>
 
       <button 

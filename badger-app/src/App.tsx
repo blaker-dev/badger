@@ -1,13 +1,28 @@
 import React from 'react';
-import { CorkNoise } from './CorkNoise';
-import { PaperManager } from './PaperManager';
+import { useState } from 'react';
+import { CorkNoise } from './CorkNoise.tsx';
+import { BoardManager } from './BoardManager.tsx';
+import { Navbar } from './Navbar.tsx';
+import { Home } from './Home.tsx'
 
 export const App: React.FC = () => {
-  return (
-    <div className="canvas">
-      <CorkNoise/>
+  const [scene, setScene] = useState('');
 
-      <PaperManager/>
+  return (
+    <div className="cork-canvas">
+
+      { scene == "Home" ?
+        <div className="home">
+          <Home/>
+        </div>
+        :
+        <div> 
+          <CorkNoise/>
+          <BoardManager/>
+        </div>
+      }
+
+      <Navbar setScene={setScene}/>
     </div>
   );
 };

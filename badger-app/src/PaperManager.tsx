@@ -10,7 +10,7 @@ import {
 import { PaperNode } from './PaperNode';
 import { BadgeNode } from './BadgeNode';
 import { DraggableItem } from './DraggableItem';
-import { Navbar } from './Navbar';
+import { Toolbar } from './Toolbar';
 import { AddBadgeModal } from './AddBadgeModal';
 
 interface BadgeData {
@@ -241,7 +241,7 @@ export const PaperManager: React.FC = () => {
         </div>
     </DraggableItem>
 ))}
-                </div>
+        </div>
             </DndContext>
 
             {isModalOpen && (
@@ -251,7 +251,7 @@ export const PaperManager: React.FC = () => {
                 />
             )}
 
-            <Navbar onAddClick={() => setIsModalOpen(true)}/>
+            <Toolbar onAddClick={() => setIsModalOpen(true)}/>
         </>
     );
 };
