@@ -7,7 +7,9 @@
 }
 
 .cork-canvas {
-  background-color: #C09870; 
+  background-color: #dca774;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 2px, transparent 2px);
+  background-size: 16px 16px;
 
   width: 100vw;
   height: 100vh;

@@ -3,6 +3,8 @@ import { PaperManager } from './PaperManager';
 
 export const BoardManager: React.FC = () => {
     return (
-        <PaperManager/>
+        <div className="">
+            <PaperManager/>
+        </div>
     );
 };

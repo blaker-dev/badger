@@ -1,12 +1,11 @@
 import React from 'react';
 import { useState } from 'react';
-import { CorkNoise } from './CorkNoise.tsx';
 import { BoardManager } from './BoardManager.tsx';
 import { Navbar } from './Navbar.tsx';
 import { Home } from './Home.tsx'
 
 export const App: React.FC = () => {
-  const [scene, setScene] = useState('');
+  const [scene, setScene] = useState('Home');
 
   return (
     <div className="cork-canvas">
@@ -17,7 +16,6 @@ export const App: React.FC = () => {
         </div>
         :
         <div> 
-          <CorkNoise/>
           <BoardManager/>
         </div>
       }
