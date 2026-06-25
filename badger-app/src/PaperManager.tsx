@@ -236,10 +236,10 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ scene }) => {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        fontSize: '18px'
+                        fontSize: '18px',
                     }}
                 >
-                    🗑️
+                    X
                 </button>
             )}
         </div>
