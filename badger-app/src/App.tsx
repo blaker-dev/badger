@@ -17,7 +17,7 @@ export const App: React.FC = () => {
       {(() => {
         switch (scene) {
           case 'Home':
-            return <Home setScene={setScene} setBoardID={setBoardID}/>
+            return <Home scene={scene} setScene={setScene} setBoardID={setBoardID}/>
           case 'Board':
             return <PaperManager boardID={boardID}/>}
       })()} 

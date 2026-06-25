@@ -45,6 +45,14 @@ app.get('/api/badges/:boardID', (req, res) => {
     });
 });
 
+// get all boards in the db
+app.get('/api/boards', (req, res) => {
+    db.all("SELECT * FROM Boards", [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message});
+        res.json(rows)
+    });
+});
+
 // Add a new badge to the database
 app.post('/api/badges/:boardID', (req, res) => {
     const inputBoardID = req.params.boardID;
@@ -61,6 +69,26 @@ app.post('/api/badges/:boardID', (req, res) => {
             res.json({ id: this.lastID, title, text, drawing, isBadge, isCompleted, x, y, zIndex, shape, rotation });
         }
     );
+});
+
+// Add a new board to the database
+app.post('/api/boards', (req, res) => {
+    const { title, desc, image } = req.body;
+    const query = `INSERT INTO Boards (title, desc, image) VALUES (?, ?, ?)`;
+
+    db.run(query, [title, desc, image], function (err) {
+        if (err) {
+            console.error("Database insertion error:", err.message);
+            return res.status(500).json({ error: 'Failed to create new board' });
+        }
+
+        res.status(201).json({
+            id: this.lastID, 
+            title,
+            desc,
+            image
+        });
+    }); 
 });
 
 // Update a badge's position
