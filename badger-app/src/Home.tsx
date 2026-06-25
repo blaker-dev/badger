@@ -2,6 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import './stylesheets/home.css';
 import { Toolbar } from './Toolbar';
+import { AddBoardModal } from './AddBoardModal';
 
 interface HomeProps {
     scene: string;
@@ -12,23 +13,31 @@ interface HomeProps {
 interface BoardProp {
     id: number,
     title: string,
-    description: string
+    desc: string,
+    image: string
+}
+
+interface NewBoardProps {
+    title: string,
+    desc: string,
+    image: string
 }
 
 export const Home: React.FC<HomeProps> = ({ scene, setScene, setBoardID }) => {
     const [boards, setBoards] = useState<BoardProp[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const updateBoard = (message: string, id: number): void => {
         setScene(message);
         setBoardID(id);   
     }
 
-    const addBoard = async (): Promise<void> => {
+    const addBoard = async ({ title, desc, image}: NewBoardProps): Promise<void> => {
         try {
             const payload = {
-                title: 'Japan',
-                desc: 'Trip to Japan, Photos, Bucket List',
-                image: ''
+                title,
+                desc,
+                image
             };
 
             const response = await fetch('http://localhost:3001/api/boards', {
@@ -46,7 +55,8 @@ export const Home: React.FC<HomeProps> = ({ scene, setScene, setBoardID }) => {
             const savedBoard: BoardProp = {
                 id: serverBoard.id,
                 title: serverBoard.title,
-                description: serverBoard.desc 
+                desc: serverBoard.desc,
+                image: serverBoard.image
             };
 
             setBoards([...boards, savedBoard]);
@@ -93,14 +103,29 @@ export const Home: React.FC<HomeProps> = ({ scene, setScene, setBoardID }) => {
                             </div>
                             <div className="polaroid-text">
                                 <h2>{board.title}</h2>
-                                <p>{board.description}</p>
+                                <p>{board.desc}</p>
                             </div>
                         </div>
                     ))}
                 </div>
             </main>
 
-            <Toolbar onAddClick={addBoard}/>
+            {isModalOpen && (
+                <AddBoardModal 
+                    onClose={() => setIsModalOpen(false)} 
+                    onSave={(modalData) => { 
+                        addBoard({
+                            title: modalData.title,
+                            desc: modalData.desc,
+                            image: ''
+                        });
+                        
+                        setIsModalOpen(false);
+                    }} 
+                />
+            )}
+
+            <Toolbar onAddClick={() => setIsModalOpen(true)}/>
         </div> 
     );
 }

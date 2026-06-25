@@ -247,7 +247,13 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ boardID }) => {
                             </div>
                         </DraggableItem>
                     ))}
-                </div>
+                </div  const addBoard = async ({ title: text, desc: text, image: text}): Promise<void> => {
+        try {
+            const payload = {
+                title: title,
+                desc: desc,
+                image: im
+            };>
             </DndContext>
 
             {isModalOpen && (
