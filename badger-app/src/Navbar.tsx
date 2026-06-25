@@ -1,35 +1,27 @@
-// BottomNav.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import './stylesheets/navbar.css';
 
 interface NavbarProps {
+  scene: string;
   setScene: (value: string) => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ setScene }) => {
-  const [activeTab, setActiveTab] = useState<string>('Home');
-
-  const updateScene = (scene: string): void => {
-    setScene(scene);
-    setActiveTab(scene);
-  }
-
+export const Navbar: React.FC<NavbarProps> = ({ scene, setScene }) => {
   return (
     <nav className="bottom-nav">
       <button 
-        className={`nav-item ${activeTab === 'Home' ? 'active' : ''}`}
-        onClick={() => updateScene('Home')}
+        className={`nav-item ${scene === 'Home' ? 'active' : ''}`}
+        onClick={() => setScene('Home')}
       >
         Home
       </button>
 
       <button 
-        className={`nav-item ${activeTab === 'Profile' ? 'active' : ''}`}
-        onClick={() => setActiveTab('Profile')}
+        className={`nav-item ${scene === 'Profile' ? 'active' : ''}`}
+        onClick={() => setScene('Profile')}
       >
         Profile
       </button>
-      
     </nav>
   );
 };

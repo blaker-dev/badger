@@ -22,7 +22,7 @@ export const App: React.FC = () => {
             return <PaperManager boardID={boardID}/>}
       })()} 
 
-      <Navbar setScene={setScene}/>
+      <Navbar scene={scene} setScene={setScene}/>
     </div>
   );
 };

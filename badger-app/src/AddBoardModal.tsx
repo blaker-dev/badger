@@ -25,7 +25,7 @@ export const AddBoardModal: React.FC<AddBoardModalProps> = ({ onClose, onSave })
             <form onSubmit={handleSubmit} style={{
                 backgroundColor: '#FAFAF8', padding: '30px', borderRadius: '15px', width: '300px'
             }}>
-                <h2>Add to Bucket List</h2>
+                <h2>Add a new board</h2>
                 
                 <input 
                 placeholder="Title" 

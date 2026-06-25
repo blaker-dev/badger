@@ -129,3 +129,6 @@ export const Home: React.FC<HomeProps> = ({ scene, setScene, setBoardID }) => {
         </div> 
     );
 }
+
+
+// TODO: add board deletion
