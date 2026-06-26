@@ -2,11 +2,22 @@ import React, { useState, useRef } from 'react';
 import { type Point, getSvgPathFromStroke } from './libs/drawingUtils.ts'
 
 interface DrawingCanvasProps {
-  setDrawing: (value: string) => void; // string function (effectively passes data up to the parent)
+  setDrawing: (value: string) => void;
+  initialDrawing?: string;
 }
 
-export const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ setDrawing }) => {
-  const [lines, setLines] = useState<Point[][]>([]);
+export const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ setDrawing, initialDrawing }) => {
+  const [lines, setLines] = useState<Point[][]>(() => {
+    if (initialDrawing) {
+      try {
+        return JSON.parse(initialDrawing);
+      } catch (e) {
+        console.error("Failed to parse initial drawing data:", e);
+        return [];
+      }
+    }
+    return [];
+  });
   const [currentLine, setCurrentLine] = useState<Point[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -82,9 +93,13 @@ export const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ setDrawing }) => {
           />
         )}
       </svg>
-      <button 
-        onClick={() => { setLines([]); setCurrentLine([]); }}
-        style={{ marginTop: '10px' }}
+      <button
+        type="button" 
+        onClick={(e) => { 
+          e.stopPropagation();
+          setLines([]); setCurrentLine([]), setDrawing(''); 
+        }}
+        style={{ margin:'10px' }}
       >
         Clear Drawing
       </button>

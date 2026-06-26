@@ -39,7 +39,7 @@ export const EditBadgeModal: React.FC<EditBadgeModalProps> = ({ badgeData, onClo
                 />
 
                 {isBadge ? 
-                    <DrawingCanvas setDrawing={setDrawing}/>
+                    <DrawingCanvas setDrawing={setDrawing} initialDrawing={drawing}/>
                     :  
                     <input 
                         placeholder="Description or Image URL" 
