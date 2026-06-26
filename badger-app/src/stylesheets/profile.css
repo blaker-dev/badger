@@ -1,0 +1,143 @@
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5vh 20px 15vh;
+  min-height: 80vh;
+  gap: 40px;
+  overflow-y: auto; 
+}
+
+.dymo-label {
+  background-color: #111;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+  display: inline-block;
+  margin: 0;
+}
+
+.main-title {
+  transform: rotate(-2deg);
+  font-size: 24px;
+}
+
+.bio-title, .stats-title {
+  font-size: 16px;
+  transform: rotate(1deg);
+  margin-bottom: 15px;
+}
+
+.taped-element {
+  position: relative;
+}
+
+.taped-element::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  width: 100px;
+  height: 30px;
+  background-color: rgba(255, 255, 230, 0.6);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.polaroid-wrapper {
+  position: relative;
+  transform: rotate(4deg);
+  transition: transform 0.2s ease;
+}
+
+.polaroid-wrapper:hover {
+  transform: rotate(2deg) scale(1.05);
+}
+
+.polaroid-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  transform: rotate(-10deg);
+  width: 80px;
+  height: 25px;
+  background-color: rgba(255, 255, 230, 0.6);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+.polaroid-card {
+  background-color: #FAFAF8;
+  padding: 15px 15px 40px 15px;
+  box-shadow: 4px 6px 10px rgba(0, 0, 0, 0.4);
+  width: 200px;
+}
+
+.polaroid-image {
+  background-color: #222;
+  height: 180px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: inset 0px 0px 10px rgba(0,0,0,0.8);
+}
+
+.placeholder-text {
+  color: #666;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+}
+
+.polaroid-caption {
+  font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 18px;
+  color: #333;
+}
+
+.bio-paper {
+  background-color: #FAFAF8;
+  width: 90%;
+  max-width: 400px;
+  padding: 20px 20px 30px 60px; 
+  box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.3);
+  transform: rotate(-1deg);
+  
+  background-image: 
+    linear-gradient(90deg, transparent 40px, #ffb3b3 40px, #ffb3b3 42px, transparent 42px),
+    repeating-linear-gradient(0deg, transparent, transparent 29px, #b3d9ff 29px, #b3d9ff 30px);
+}
+
+.handwritten-text {
+  font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+  color: #111;
+  font-size: 16px;
+  line-height: 30px; 
+  margin: 0;
+}
+
+.sticky-note {
+  background-color: #ffeb3b;
+  width: 250px;
+  padding: 20px;
+  box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.2);
+  transform: rotate(3deg);
+  border-bottom-right-radius: 30px 5px;
+}
+
+.sticky-note ul {
+  list-style-type: square;
+  padding-left: 20px;
+}
+
+.sticky-note li {
+  margin-bottom: 10px;
+}

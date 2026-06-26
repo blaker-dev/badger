@@ -5,13 +5,14 @@ import { type Point, getSvgPathFromStroke } from './libs/drawingUtils';
 interface BadgeNodeProps {
     title: string;
     drawing: string; // json string drawing
-   isCompleted: boolean;
+    isCompleted: boolean;
     shape: string; 
     rotation: string; 
 }
 
 export const BadgeNode: React.FC<BadgeNodeProps> = ({ drawing, isCompleted, shape, rotation }) => { 
     let lines: Point[][] = [];
+
     try {
         if (drawing) {
             lines = JSON.parse(drawing);

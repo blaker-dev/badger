@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { PaperManager } from './PaperManager.tsx';
 import { Navbar } from './Navbar.tsx';
 import { Home } from './Home.tsx'
+import { Profile } from './Profile.tsx'
 
 export const App: React.FC = () => {
   const [scene, setScene] = useState('Home');
@@ -19,7 +20,9 @@ export const App: React.FC = () => {
           case 'Home':
             return <Home scene={scene} setScene={setScene} setBoardID={setBoardID}/>
           case 'Board':
-            return <PaperManager boardID={boardID}/>}
+            return <PaperManager boardID={boardID}/>
+          case 'Profile':
+            return <Profile/>}
       })()} 
 
       <Navbar scene={scene} setScene={setScene}/>

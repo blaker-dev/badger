@@ -1,4 +1,3 @@
-// BottomNav.tsx
 import React, { useState } from 'react';
 import './stylesheets/toolbar.css';
 

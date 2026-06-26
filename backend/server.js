@@ -91,17 +91,28 @@ app.post('/api/boards', (req, res) => {
     }); 
 });
 
-// Update a badge's position
 app.put('/api/badges/:id', (req, res) => {
   const { id } = req.params;
-  const { x, y, zIndex } = req.body;
+  const { x, y, zIndex, title, text, drawing, isBadge } = req.body;
   
-  const query = `UPDATE badges SET x = ?, y = ?, zIndex = ? WHERE id = ?`;
-  
-  db.run(query, [x, y, zIndex, id], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: "Position saved successfully", changes: this.changes });
-  });
+  // Check if this request is a position drag update
+  if (x !== undefined && y !== undefined && zIndex !== undefined && title === undefined) {
+    const query = `UPDATE badges SET x = ?, y = ?, zIndex = ? WHERE id = ?`;
+    db.run(query, [x, y, zIndex, id], function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      return res.json({ message: "Position saved successfully", changes: this.changes });
+    });
+  } 
+  // Otherwise, it's a content edit update from the modal!
+  else {
+    const query = `UPDATE badges SET title = ?, text = ?, drawing = ?, isBadge = ? WHERE id = ?`;
+    const isBadgeValue = isBadge ? 1 : 0; 
+
+    db.run(query, [title, text, drawing, isBadgeValue, id], function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      return res.json({ message: "Badge content updated successfully", changes: this.changes });
+    });
+  }
 });
 
 // DELETE Route: Remove a badge

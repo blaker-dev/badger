@@ -12,32 +12,21 @@ import { BadgeNode } from './BadgeNode';
 import { DraggableItem } from './DraggableItem';
 import { Toolbar } from './Toolbar';
 import { AddBadgeModal } from './AddBadgeModal'
+import { TempToolbar } from './TempToolbar';
+import { EditBadgeModal } from './EditBadgeModal';
+import { type BadgeData } from './libs/badgeInfo.ts';
 import './stylesheets/app.css';
 
 interface PaperManagerProps {
     boardID: number;
 }
 
-interface BadgeData {
-    id: number;
-    boardID: number;
-    title: string;
-    text: string;       
-    drawing: string;
-    isBadge: boolean;
-    isCompleted: boolean;
-    x: number;  
-    y: number;      
-    zIndex: number; 
-    shape: string;
-    rotation: string;
-}
-
 export const PaperManager: React.FC<PaperManagerProps> = ({ boardID }) => {
     const [badges, setBadges] = useState<BadgeData[]>([]);
     const [maxZIndex, setMaxZIndex] = useState(1);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [addModalOpen, setAddModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
     const [selectedBadgeId, setSelectedBadgeId] = useState<number | null>(null);
 
     const sensors = useSensors(
@@ -88,7 +77,8 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ boardID }) => {
 
             setBadges([...badges, savedBadge]);
             setMaxZIndex(savedBadge.zIndex);
-            setIsModalOpen(false); // Closes the modal on success!
+            setAddModalOpen(false);
+            setEditModalOpen(false);
         } catch (error) {
             console.error("Failed to save badge:", error);
             alert("Could not connect to the database. Is your backend server running?");
@@ -106,6 +96,35 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ boardID }) => {
             setSelectedBadgeId(null);
         } catch (error) {
             alert('Failed to delete badge. Is the backend running?');
+        }
+    };
+
+    const handleUpdateBadge = async (updatedData: { title: string; text: string; drawing: string; isBadge: boolean }) => {
+        if (!selectedBadgeId) return;
+
+        try {
+            const response = await fetch(`http://localhost:3001/api/badges/${selectedBadgeId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            setBadges((prevBadges) =>
+                prevBadges.map((badge) =>
+                    badge.id === selectedBadgeId 
+                        ? { ...badge, ...updatedData, shape: updatedData.isBadge ? generateRippedEdge() : '' } 
+                        : badge
+                )
+            );
+
+            setEditModalOpen(false);
+        } catch (error) {
+            console.error("Failed to update badge content:", error);
+            alert("Could not update badge. Is your backend server running?");
         }
     };
     
@@ -211,53 +230,64 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ boardID }) => {
                                         rotation={item.rotation}
                                     />
                                 ) : (
-                                <PaperNode 
-                                    key={item.id} 
-                                    title={item.title} 
-                                    text={item.text} 
-                                />
-                            )}
-                            {selectedBadgeId === item.id && (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteBadge(item.id);
-                                    }}
-                                    style={{
-                                        position: 'absolute',
-                                        right: '-50px',
-                                        top: '10px',
-                                        background: '#ff4d4d',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '50%',
-                                        width: '35px',
-                                        height: '35px',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        fontSize: '18px',
-                                    }}
-                                >
-                                    X
-                                </button>
-                            )}
+                                    <PaperNode 
+                                        key={item.id} 
+                                        title={item.title} 
+                                        text={item.text} 
+                                    />
+                                )}
+                                {/* {selectedBadgeId === item.id && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteBadge(item.id);
+                                        }}
+                                        style={{
+                                            position: 'absolute',
+                                            right: '-50px',
+                                            top: '10px',
+                                            background: '#ff4d4d',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '50%',
+                                            width: '35px',
+                                            height: '35px',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            fontSize: '18px',
+                                        }}
+                                    >
+                                        X
+                                    </button>
+                                )} */}
+                                { selectedBadgeId === item.id && 
+                                    <TempToolbar badgeId={selectedBadgeId} onEdit={() => setEditModalOpen(true)} onDelete={handleDeleteBadge}/>
+                                }
                             </div>
                         </DraggableItem>
                     ))}
                 </div>
             </DndContext>
 
-            {isModalOpen && (
+            {editModalOpen && (
+                <EditBadgeModal
+                    badgeData={badges.find(b => b.id === selectedBadgeId)!}
+                    onClose={() => setEditModalOpen(false)}
+                    onSave={(handleUpdateBadge)}
+                />
+            )}
+
+            {addModalOpen && (
                 <AddBadgeModal 
-                    onClose={() => setIsModalOpen(false)} 
+                    onClose={() => setAddModalOpen(false)} 
                     onSave={handleSaveNewBadge} 
                 />
             )}
 
-            <Toolbar onAddClick={() => setIsModalOpen(true)}/>
+            <Toolbar onAddClick={() => setAddModalOpen(true)}/>
         </div>
     );
 };
