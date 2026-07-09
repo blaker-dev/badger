@@ -1,12 +1,13 @@
 import React from 'react';
 
-interface TempToolbarProps {
-    badgeId: number;
+interface HomeToolbarProps {
+    boardId: number;
+    open: () => void;
     onEdit: () => void;
     onDelete: (id: number) => Promise<void>;
 }
 
-export const TempToolbar: React.FC<TempToolbarProps> = ({ badgeId, onEdit , onDelete }) => {
+export const HomeToolbar: React.FC<HomeToolbarProps> = ({ boardId, open, onEdit , onDelete }) => {
     
     const containerStyle: React.CSSProperties = {
         position: 'absolute',
@@ -43,13 +44,21 @@ export const TempToolbar: React.FC<TempToolbarProps> = ({ badgeId, onEdit , onDe
                 style={buttonStyle}
                 onClick={(e) => {
                     e.stopPropagation();
+                    open();
+                }}>
+                Open
+            </button>
+            <button 
+                style={buttonStyle}
+                onClick={(e) => {
+                    e.stopPropagation();
                     onEdit();
                 }}>
                 Edit
             </button>
             <button 
                 style={{ ...buttonStyle, color: '#d9534f' }} 
-                onClick={() => { onDelete(badgeId) }}
+                onClick={() => { onDelete(boardId) }}
             >
                 Delete
             </button>

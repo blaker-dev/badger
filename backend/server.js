@@ -91,13 +91,27 @@ app.post('/api/boards', (req, res) => {
     }); 
 });
 
+// Update board
+app.put('/api/board/:id', (req, res) => {
+    const { id } = req.params;
+    const { title, desc, image } = req.body;
+
+    const query = `UPDATE Boards SET title = ?, desc = ? WHERE id = ?`; // TODO: ADD IMAGES
+    db.run(query, [title, desc, id], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        return res.json({ message: "Board content updated successfully", changes: this.changes});
+    });
+});
+
+
+// Update badegs position or info
 app.put('/api/badges/:id', (req, res) => {
   const { id } = req.params;
   const { x, y, zIndex, title, text, drawing, isBadge } = req.body;
   
   // Check if this request is a position drag update
   if (x !== undefined && y !== undefined && zIndex !== undefined && title === undefined) {
-    const query = `UPDATE badges SET x = ?, y = ?, zIndex = ? WHERE id = ?`;
+    const query = `UPDATE Badges SET x = ?, y = ?, zIndex = ? WHERE id = ?`;
     db.run(query, [x, y, zIndex, id], function(err) {
       if (err) return res.status(500).json({ error: err.message });
       return res.json({ message: "Position saved successfully", changes: this.changes });
@@ -105,7 +119,7 @@ app.put('/api/badges/:id', (req, res) => {
   } 
   // Otherwise, it's a content edit update from the modal!
   else {
-    const query = `UPDATE badges SET title = ?, text = ?, drawing = ?, isBadge = ? WHERE id = ?`;
+    const query = `UPDATE Badges SET title = ?, text = ?, drawing = ?, isBadge = ? WHERE id = ?`;
     const isBadgeValue = isBadge ? 1 : 0; 
 
     db.run(query, [title, text, drawing, isBadgeValue, id], function(err) {
@@ -119,12 +133,26 @@ app.put('/api/badges/:id', (req, res) => {
 app.delete('/api/badges/:id', (req, res) => {
     const { id } = req.params;
     
-    db.run('DELETE FROM badges WHERE id = ?', [id], function(err) {
+    db.run('DELETE FROM Badges WHERE id = ?', [id], function(err) {
         if (err) {
             console.error(err.message);
             return res.status(500).json({ error: 'Failed to delete badge' });
         }
         res.json({ message: 'Badge deleted successfully' });
+    });
+});
+
+// DELETE board
+app.delete('/api/board/:id', (req, res) => {
+    const { id } = req.params;
+    
+    db.run('DELETE FROM Boards WHERE id = ?', [id], function(err) {
+        if (err) {
+            console.error(err.message);
+            return res.status(500).json({ error: 'Failed to delete badge' });
+        }
+        
+        res.json({ message: 'Board deleted successfully' });
     });
 });
 

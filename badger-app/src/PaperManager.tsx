@@ -12,7 +12,7 @@ import { BadgeNode } from './BadgeNode';
 import { DraggableItem } from './DraggableItem';
 import { Toolbar } from './Toolbar';
 import { AddBadgeModal } from './AddBadgeModal'
-import { TempToolbar } from './TempToolbar';
+import { BadgeToolbar } from './BadgeToolbar.tsx';
 import { EditBadgeModal } from './EditBadgeModal';
 import { type BadgeData } from './libs/badgeInfo.ts';
 import './stylesheets/app.css';
@@ -236,35 +236,9 @@ export const PaperManager: React.FC<PaperManagerProps> = ({ boardID }) => {
                                         text={item.text} 
                                     />
                                 )}
-                                {/* {selectedBadgeId === item.id && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteBadge(item.id);
-                                        }}
-                                        style={{
-                                            position: 'absolute',
-                                            right: '-50px',
-                                            top: '10px',
-                                            background: '#ff4d4d',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '50%',
-                                            width: '35px',
-                                            height: '35px',
-                                            cursor: 'pointer',
-                                            boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            fontSize: '18px',
-                                        }}
-                                    >
-                                        X
-                                    </button>
-                                )} */}
+                    
                                 { selectedBadgeId === item.id && 
-                                    <TempToolbar badgeId={selectedBadgeId} onEdit={() => setEditModalOpen(true)} onDelete={handleDeleteBadge}/>
+                                    <BadgeToolbar badgeId={selectedBadgeId} onEdit={() => setEditModalOpen(true)} onDelete={handleDeleteBadge}/>
                                 }
                             </div>
                         </DraggableItem>

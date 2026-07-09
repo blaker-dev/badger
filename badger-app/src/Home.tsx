@@ -1,20 +1,18 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import './stylesheets/home.css';
 import { Toolbar } from './Toolbar';
 import { AddBoardModal } from './AddBoardModal';
+import { HomeToolbar } from './HomeToolbar.tsx';
+import { EditBoardModal } from './EditBoardModal';
+
+
+import './stylesheets/home.css';
+import { type BoardProp } from './libs/boardInfo.ts';
 
 interface HomeProps {
     scene: string;
     setScene: (value: string) => void;
     setBoardID: (value: number) => void;
-}
-
-interface BoardProp {
-    id: number,
-    title: string,
-    desc: string,
-    image: string
 }
 
 interface NewBoardProps {
@@ -25,7 +23,11 @@ interface NewBoardProps {
 
 export const Home: React.FC<HomeProps> = ({ scene, setScene, setBoardID }) => {
     const [boards, setBoards] = useState<BoardProp[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    
+    const [addModalOpen, setAddModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+
+    const [currentBoard, setCurrentBoard] = useState(-1);
 
     const updateBoard = (message: string, id: number): void => {
         setScene(message);
@@ -85,34 +87,116 @@ export const Home: React.FC<HomeProps> = ({ scene, setScene, setBoardID }) => {
         {
             fetchBoards();
         }
-    }, [scene, boards]);
+    }, [scene]);
+
+    // delete boards on the homescreen
+    const handleDeleteBoard = async (id: number) => {
+        try {
+            await fetch(`http://localhost:3001/api/board/${id}`, {
+                method: 'DELETE',
+            });
+
+            // TODO: also delete the badges that belong to each board
+            
+            setBoards((prevBoards) => prevBoards.filter((board) => board.id !== id));
+            
+            setCurrentBoard(-1);
+        } catch (error) {
+            alert('Failed to delete board. Is the backend running?');
+        }
+    };
+
+    const handleUpdate = async (title: string, desc: string) => {
+        try {
+            // send info to backend
+            await fetch(`http://localhost:3001/api/board/${currentBoard}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, desc})
+            });
+            
+            // now edit local board - after success
+            setBoards((prevBoards) =>
+                prevBoards.map((board) => {
+                    if (board.id === currentBoard) {
+                        return {
+                            ...board,
+                            title: title,
+                            desc: desc,
+                        };
+                    }
+                    
+                    return board;
+                })
+            );
+
+        } catch (error) {
+            alert('Failed to update board ' + error);
+        }
+    };
 
     return (
-        <div className="scrapbook-container">
+        <div className="scrapbook-container" onClick={() => setCurrentBoard(-1)}>
             <header className="scrapbook-header">
                 <h1 className="label-maker-title">MY BOARDS</h1>
             </header>
             
             <main className="scrapbook-scroll-area">
                 <div className="polaroid-grid">
-                    {boards.map((board) => (
-                        <div key={board.id} className="polaroid-card" onClick={() => updateBoard('Board', board.id)}>
-                            <div className="polaroid-image-placeholder">
-                                {/* >> thumbnail or smth here << */}
-                                <span>✧.*</span>
+                    {boards.map((board) => {
+                        const isSelected = currentBoard === board.id;
+
+                        return (
+                            <div 
+                                key={board.id} 
+                                style={{ 
+                                    position: 'relative', 
+                                    marginBottom: isSelected ? '60px' : '0px', 
+                                    transition: 'margin-bottom 0.2s ease'
+                                }}
+                                onClick={(e) => {e.stopPropagation()}}
+                            > 
+                                <div 
+                                    className="polaroid-card" 
+                                    onClick={(e) => {
+                                        e.stopPropagation(); 
+                                        setCurrentBoard(board.id);
+                                    }}
+                                >
+                                    <div className="polaroid-image-placeholder">
+                                        <span>✧.*</span>
+                                    </div>
+                                    <div className="polaroid-text">
+                                        <h2>{board.title}</h2>
+                                    </div>
+                                    <p>{board.desc}</p>
+                                </div>
+
+                                { isSelected && (
+                                    <HomeToolbar
+                                        boardId={board.id}
+                                        open={() => {updateBoard('Board', board.id)}}
+                                        onEdit={() => {setEditModalOpen(true)}}
+                                        onDelete={handleDeleteBoard}
+                                    />
+                                )}
                             </div>
-                            <div className="polaroid-text">
-                                <h2>{board.title}</h2>
-                                <p>{board.desc}</p>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </main>
 
-            {isModalOpen && (
+            {editModalOpen && (
+                <EditBoardModal
+                    boardData={boards.find(b => b.id === currentBoard)!}
+                    onClose={() => {setEditModalOpen(false)}}
+                    onSave={({ title, desc }) => handleUpdate(title, desc)}
+                />
+            )}
+
+            {addModalOpen && (
                 <AddBoardModal 
-                    onClose={() => setIsModalOpen(false)} 
+                    onClose={() => setAddModalOpen(false)} 
                     onSave={(modalData) => { 
                         addBoard({
                             title: modalData.title,
@@ -120,15 +204,12 @@ export const Home: React.FC<HomeProps> = ({ scene, setScene, setBoardID }) => {
                             image: ''
                         });
                         
-                        setIsModalOpen(false);
+                        setAddModalOpen(false);
                     }} 
                 />
             )}
 
-            <Toolbar onAddClick={() => setIsModalOpen(true)}/>
+            <Toolbar onAddClick={() => setAddModalOpen(true)}/>
         </div> 
     );
 }
-
-
-// TODO: add board deletion
